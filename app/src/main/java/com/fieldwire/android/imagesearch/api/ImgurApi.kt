@@ -28,13 +28,9 @@ fun GalleryItem.asImageDetail(): ImageDetail {
     return ImageDetail(
         id = this.id,
         title = this.title,
-        description = this.description,
-        datetime = this.datetime,
         width = imageWidth,
         height = imageHeight,
-        size = 0,
-        isAd = this.isAd,
-        link = this.link,
+        link = this.link
     )
 }
 
@@ -47,39 +43,22 @@ data class ImgurResponse(
 data class GalleryItem(
     val id: String,
     val title: String?,
-    val description: String?,
-    val datetime: Long,
-    val cover: String?,
     @SerializedName("cover_width")
     val coverWidth: Int?,
     @SerializedName("cover_height")
     val coverHeight: Int?,
-    @SerializedName("account_url")
-    val accountUrl: String?,
-    @SerializedName("account_id")
     val link: String,
     @SerializedName("is_album")
     val isAlbum: Boolean,
-    @SerializedName("images_count")
-    val imagesCount: Int,
-    @SerializedName("in_gallery")
-    val inGallery: Boolean,
-    @SerializedName("is_ad")
-    val isAd: Boolean,
     val images: List<ImageDetail>?,
     val width: Int?,
     val height: Int?,
-    val type: String?
 )
 
 data class ImageDetail(
     val id: String,
     val title: String?,
-    val description: String?,
-    val datetime: Long,
     val width: Int,
     val height: Int,
-    val size: Long,
-    val isAd: Boolean,
     val link: String,
 )

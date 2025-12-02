@@ -19,13 +19,11 @@ class ImageRepository @Inject constructor(private val imgurApi: ImgurApi) {
         if (page == 1) {
             imageCache.clear()
         }
-        // Add new images to the map cache, keyed by their ID.
         imageCache.putAll(newImages.associateBy { it.id })
         return newImages
     }
 
     fun getImage(id: String): ImageDetail? {
-        // Use the map for an efficient O(1) lookup.
         return imageCache[id]
     }
 

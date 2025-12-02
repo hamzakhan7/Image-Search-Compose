@@ -15,7 +15,10 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,32 +45,35 @@ fun SearchResultsScreen(
 
     val state by viewModel.state.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        when (val currentState = state) {
-            is SearchResultsState.Loading -> {
-                CircularProgressIndicator()
-            }
-            is SearchResultsState.Success -> {
-                if (currentState.images.isEmpty()) {
+    when (val currentState = state) {
+        is SearchResultsState.Loading -> {
+            Loading()
+        }
+        is SearchResultsState.Success -> {
+            if (currentState.images.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = "No results found for \"$query\"")
-                } else {
-                    SearchResultsContent(
-                        images = currentState.images,
-                        isLoadingMore = currentState.isLoadingMore,
-                        onLoadMore = { viewModel.onEvent(SearchResultsEvent.LoadMore) },
-                        onImageClick = onImageClick
-                    )
                 }
+            } else {
+                SearchResultsContent(
+                    query = query,
+                    images = currentState.images,
+                    isLoadingMore = currentState.isLoadingMore,
+                    onLoadMore = { viewModel.onEvent(SearchResultsEvent.LoadMore) },
+                    onImageClick = onImageClick
+                )
             }
-            is SearchResultsState.Error -> {
-                Text(text = currentState.message)
-            }
+        }
+        is SearchResultsState.Error -> {
+            SearchError(message = currentState.message)
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchResultsContent(
+    query: String,
     images: List<ImageDetail>,
     isLoadingMore: Boolean,
     onLoadMore: () -> Unit,
@@ -87,13 +93,21 @@ private fun SearchResultsContent(
         }
     }
 
-    ResultsGrid(
-        images = images,
-        isLoadingMore = isLoadingMore,
-        gridState = gridState,
-        onImageClick = onImageClick,
-        modifier = modifier
-    )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Results for \"$query\"") }
+            )
+        }
+    ) { paddingValues ->
+        ResultsGrid(
+            images = images,
+            isLoadingMore = isLoadingMore,
+            gridState = gridState,
+            onImageClick = onImageClick,
+            modifier = modifier.padding(paddingValues)
+        )
+    }
 }
 
 @Composable
@@ -138,5 +152,19 @@ private fun ResultsGrid(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Loading(){
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun SearchError(message: String){
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = message)
     }
 }
