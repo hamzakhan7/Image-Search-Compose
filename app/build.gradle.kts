@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.retrofitConverter)
 
     implementation(libs.dagger.hilt.android)
+    implementation(libs.androidx.compose.foundation.layout)
     kapt(libs.dagger.hilt.compiler)
 
     implementation(libs.androidx.navigation.compose)

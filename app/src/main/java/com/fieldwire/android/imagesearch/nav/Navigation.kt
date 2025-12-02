@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.fieldwire.android.imagesearch.ui.details.ImageDetailsScreen
 import com.fieldwire.android.imagesearch.ui.results.SearchResultsScreen
 import com.fieldwire.android.imagesearch.ui.search.SearchScreen
 
@@ -24,7 +25,18 @@ fun Navigation(){
             arguments = listOf(navArgument("query") { type = NavType.StringType })
         ) { backStackEntry ->
             val query = backStackEntry.arguments?.getString("query") ?: ""
-            SearchResultsScreen(query = query)
+            SearchResultsScreen(
+                query = query,
+                onImageClick = {
+                    navController.navigate(Screen.Details.createRoute(it))
+                }
+            )
+        }
+        composable(
+            route = Screen.Details.route,
+            arguments = listOf(navArgument("imageId") { type = NavType.StringType })
+        ) {
+            ImageDetailsScreen()
         }
     }
 }

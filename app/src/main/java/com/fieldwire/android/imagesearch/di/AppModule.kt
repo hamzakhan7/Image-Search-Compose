@@ -1,6 +1,8 @@
 package com.fieldwire.android.imagesearch.di
 
 import com.fieldwire.android.imagesearch.api.ImgurApi
+import com.fieldwire.android.imagesearch.api.ImgurApi.Companion.BASE_URL
+import com.fieldwire.android.imagesearch.api.ImgurApi.Companion.CLIENT_ID
 import com.fieldwire.android.imagesearch.data.ImageRepository
 import dagger.Module
 import dagger.Provides
@@ -11,9 +13,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-
-private const val IMGUR_API_BASE_URL = " https://api.imgur.com/3/"
-private const val CLIENT_ID = "b067d5cb828ec5a"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,7 +40,7 @@ object AppModule {
     fun provideRetrofit(okHttpClient: OkHttpClient) : Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(IMGUR_API_BASE_URL)
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

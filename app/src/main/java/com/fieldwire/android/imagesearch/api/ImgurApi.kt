@@ -1,18 +1,41 @@
 package com.fieldwire.android.imagesearch.api
 
+import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import com.google.gson.annotations.SerializedName
 
 interface ImgurApi {
     @GET("gallery/search/{sort}/{window}/{page}")
     suspend fun searchGallery(
-        @Path("sort") sort: String = "viral",
+        @Path("sort") sort: String = "time",
         @Path("window") window: String = "all",
         @Path("page") page: Int = 1,
-        @Query("q") query: String
+        @Query("q") query: String,
+        @Query("q_type") qType: String = "jpg|png"
     ): ImgurResponse
+
+    companion object {
+        const val BASE_URL = "https://api.imgur.com/3/"
+        const val CLIENT_ID = "b067d5cb828ec5a"
+    }
+}
+
+fun GalleryItem.asImageDetail(): ImageDetail {
+    val imageWidth = this.width ?: this.coverWidth ?: 0
+    val imageHeight = this.height ?: this.coverHeight ?: 0
+
+    return ImageDetail(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        datetime = this.datetime,
+        width = imageWidth,
+        height = imageHeight,
+        size = 0,
+        isAd = this.isAd,
+        link = this.link,
+    )
 }
 
 data class ImgurResponse(
@@ -34,36 +57,19 @@ data class GalleryItem(
     @SerializedName("account_url")
     val accountUrl: String?,
     @SerializedName("account_id")
-    val accountId: Int?,
-    val privacy: String?,
-    val layout: String?,
-    val views: Int,
     val link: String,
-    val ups: Int,
-    val downs: Int,
-    val points: Int,
-    val score: Int,
     @SerializedName("is_album")
     val isAlbum: Boolean,
-    val vote: String?,
-    val favorite: Boolean,
-    val nsfw: Boolean,
-    val section: String,
-    @SerializedName("comment_count")
-    val commentCount: Int,
-    @SerializedName("favorite_count")
-    val favoriteCount: Int,
-    val topic: String?,
-    @SerializedName("topic_id")
-    val topicId: Int?,
     @SerializedName("images_count")
     val imagesCount: Int,
     @SerializedName("in_gallery")
     val inGallery: Boolean,
     @SerializedName("is_ad")
     val isAd: Boolean,
-    val tags: List<Tag>,
-    val images: List<ImageDetail>?
+    val images: List<ImageDetail>?,
+    val width: Int?,
+    val height: Int?,
+    val type: String?
 )
 
 data class ImageDetail(
@@ -71,42 +77,9 @@ data class ImageDetail(
     val title: String?,
     val description: String?,
     val datetime: Long,
-    val type: String,
-    val animated: Boolean,
     val width: Int,
     val height: Int,
     val size: Long,
-    val views: Int,
-    val bandwidth: Long,
-    val vote: String?,
-    val favorite: Boolean,
-    val nsfw: Boolean?,
-    val section: String?,
-    @SerializedName("account_url")
-    val accountUrl: String?,
-    @SerializedName("account_id")
-    val accountId: Int?,
-    @SerializedName("is_ad")
     val isAd: Boolean,
-    @SerializedName("in_most_viral")
-    val inMostViral: Boolean,
-    @SerializedName("has_sound")
-    val hasSound: Boolean,
-    val tags: List<Tag>,
     val link: String,
-    val mp4: String?,
-    val gifv: String?,
-    val hls: String?,
-    @SerializedName("mp4_size")
-    val mp4Size: Int?
-)
-
-data class Tag(
-    val name: String,
-    @SerializedName("display_name")
-    val displayName: String,
-    val followers: Int,
-    @SerializedName("total_items")
-    val totalItems: Int,
-    val following: Boolean
 )
